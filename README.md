@@ -1,3 +1,9 @@
+## Custom Update
+Background-color from body
+Buttons with gradient background-color
+Handwritten-font
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
