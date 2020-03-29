@@ -11,6 +11,7 @@ h2 {
   font-family: 'Liu Jian Mao Cao', cursive;
   letter-spacing: 12px;
 }
+
 h2::first-letter {
   font-size: 240%;
   color: #f6d365;
