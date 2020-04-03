@@ -1,19 +1,30 @@
-import React, { Component } from 'react';
-import {NavLink} from 'react-router-dom';
+import React, {Component} from 'react';
+import {NavLink, withRouter} from 'react-router-dom';
 
-export default class Nav extends Component {
+import SearchForm from './SearchForm'
 
+class Nav extends Component {
+  handleRoute = text => {
+    this.props.history.push(`/search/${text}`);
+  }
     render() {
+      
         return (
-            <nav className="main-nav">
+          <div>          <SearchForm onSubmit={this.handleRoute}/>
+                      <nav className="main-nav">
             <ul>
-              <li><NavLink exact to ='/' >Home</NavLink></li>
+              <li><NavLink to='/'>Home</NavLink></li>
               <li><NavLink to='/friends'>Friends</NavLink></li>
               <li><NavLink to='/people'>People</NavLink></li>
               <li><NavLink to='/sunset'>Sunset</NavLink></li>
             </ul>
           </nav>
+          </div>
+
+
         )
       
     }
 }
+
+export default withRouter(Nav);

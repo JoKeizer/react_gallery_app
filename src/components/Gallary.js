@@ -1,28 +1,40 @@
-
-import React from 'react';
+import React, { PureComponent } from 'react';
+import { withRouter } from 'react-router-dom'
 import Photo from './Photo';
 import NotFound from './NotFound';
 
-//props are all the images from the API with map we take one image and in Photo component we take the id, secret, server and farm to get one Image
 
-const Gallery = (props)=>{
-    const results = props.data;
+class Gallary extends PureComponent {
+
+  componentDidMount = () => {
+    // Lifts App.js state to search for image keyword
+    this.props.history.listen(location => this.props.search(location.pathname.replace(/[^\w\s]/gi, '').replace("search", '')));
+    this.props.search(this.props.text);
+  }
+
+  render() {
+    const results = this.props.data;
     let photos;
-    if(results.length> 0)
-    {photos = results.map(photo =><Photo data={photo} key={photo.id}/>);
-        return(
-            <div className="photo-container">
-                <h2>{props.title} images</h2>
-                    <ul>{photos}</ul>
-            </div>
-        );}else{ 
-            photos = <NotFound/>;
-            return(
-                <div className="photo-container">
-                    <ul>{photos}</ul>
-                </div>
-            );
-        }
-};
+    if (results.length) {
+     // Maps each photo in the 16 photo Flickr object received from App.js and passes them to Photo.js
+     photos = results.map(photo =>
+        <Photo key={photo.id} url={`https://farm${photo.farm}.staticflickr.com/${photo.server}/${photo.id}_${photo.secret}_n.jpg`} pathId={photo.id} />
+      );
+    } else {
+      photos = <NotFound />
+    }
+    // Returns loading Flickr animated logo icon while waiting for API fetch, once fetch is successful it displays image thumbnail gallery to the page 
+    return (
+        <div className="photo-container">
+            <h2>Images {this.props.title}</h2>
+            <ul className="photo-list">
+                {this.props.loading ? <span className="spinner">Loading...</span> : photos}
+            </ul>
+        </div>
+ 
+    );
+  }
 
-export default Gallery;
+}
+
+export default withRouter(Gallary);

@@ -17,6 +17,12 @@ h2::first-letter {
   color: #f6d365;
 }
 
+.spinner {
+  color: yellow;
+  margin: auto;
+}
+ 
+
 ul {
   list-style-type: none;
   padding-left: 0;

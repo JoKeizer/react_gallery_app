@@ -1,111 +1,59 @@
 import React, { Component } from 'react';
-import {BrowserRouter,  Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import createHistory from 'history/createBrowserHistory'
 
-import Nav from './components/Nav'
 import Gallary from './components/Gallary'
-import SearchForm from './components/SearchForm'
 import NotFound from './components/NotFound'
+import Nav from './components/Nav'
 
 import apiKey from './config';
 import axios from 'axios'
 import './App.css';
 
 
-export default class App extends Component {
 
-    //State content that will update the DOM
-    constructor() {
-        super();
-        this.state = {
-            photos: [],
-            query: '',
-            loading: true,
-            home: {
-                photos: [],
-                loading: true,
-            },
-            friends: {
-                photos: [],
-                loading: true,
-            },
-            people: {
-                photos: [],
-                loading: true,
-            },
-            sunset: {
-                photos: [],
-                loading: true,
-            }
-        };
-    };
-
-    //ComponentDidMount will always run with axios we will get the date from Flickr API
-    componentDidMount() {
-        this.performSearch();
-
-        axios.get(`https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=vacation&per_page=24&format=json&nojsoncallback=1&safe_search=1&safe_search=1`)
-            .then(response => {
-                let home ={...this.state.home};
-                home.photos = response.data.photos.photo;
-                home.loading= false;
-                this.setState({home});
-            })
-
-        axios.get(`https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=friends&per_page=24&format=json&nojsoncallback=1&safe_search=1&safe_search=1`)
-            .then(response => {
-                let friends ={...this.state.friends};
-                friends.photos = response.data.photos.photo;
-                friends.loading= false;
-                this.setState({friends});
-            })
-        axios.get(`https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=people&per_page=24&format=json&nojsoncallback=1&safe_search=1&safe_search=1`)
-            .then(response => {
-                let people ={...this.state.people};
-                people.photos = response.data.photos.photo;
-                people.loading= false;
-                this.setState({people});
-            })
-        axios.get(`https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=sunset&per_page=24&format=json&nojsoncallback=1&safe_search=1&safe_search=1`)
-            .then(response => {
-                let sunset ={...this.state.sunset};
-                sunset.photos = response.data.photos.photo;
-                sunset.loading= false;
-                this.setState({sunset});
-            })
-            .catch(error => {
-                console.log('Error fetching data')
-            })
-    }
-
-    performSearch = (query) => {
-        axios.get(`https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=${query}&per_page=24&format=json&nojsoncallback=1&safe_search=1&safe_search=1`)
-            .then(response => {
-                this.setState({
-                    photos: response.data.photos.photo,
-                    loading: false,
-                    title: query
-                })
-            })
-
-            .catch(error => {
-                console.log('Error fetching data')
-            })
-    }
+class App extends Component {
+    state = {
+        photos: [],
+        loading: true,
+        title: '',
+      }
+      
+      // Fetches Flickr API, and loads object containing 16 images that match the keyword into photos state.
+      performSearch = text => {
+        this.setState({
+          loading: true
+        });
+        axios.get(`https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&text=${text}&per_page=16&sort=relevance&content_type=1&format=json&nojsoncallback=1`)
+        .then(response => {
+          this.setState({
+            photos: response.data.photos.photo,
+            loading: false,
+            title: text
+         });
+      })
+      .catch(error => {
+        // eslint-disable-next-line no-console
+        console.error('Error fetching Flickr API data', error);
+      });    
+      }
+      
 
     render() {
+        const history = createHistory();
+        // Parses out just the search text from the url object.
+        let searchText = history.location.pathname.replace(/[^\w\s]/gi, '').replace("search", '');
+
         return (
-            <BrowserRouter>
-            <div className="container">
-            <SearchForm
-        onSearch={this.performSearch}
-        />
-        <Nav/>
+        <BrowserRouter>
+        <div className="container">
+            <Nav/>
         <Switch>
-        <Route exact path='/' render={ () => <Gallary data={this.state.home.photos} title={'vacation'} />} ></Route>
-        <Route exact path='/friends' render={ () => <Gallary data={this.state.friends.photos} title={'friends'} />} ></Route>
-        <Route exact path='/people' render={ () => <Gallary data={this.state.people.photos} title={"people"} />} ></Route>
-        <Route exact path='/sunset' render={ () => <Gallary data={this.state.sunset.photos} title={"sunset"} />} ></Route>
-        <Route exact path='/search/:query' render={ () => <Gallary data={this.state.photos} title={this.state.title} />} ></Route>
+        <Route exact path='/' render={ () => <Gallary data={this.state.photos} search={this.performSearch} text="vacation" loading={this.state.loading} title={"Friends"} />} ></Route>
+        <Route exact path='/friends' render={ () => <Gallary data={this.state.photos} search={this.performSearch} text="friends" loading={this.state.loading} title={"Friends"} />} ></Route>
+        <Route exact path='/people' render={ () => <Gallary data={this.state.photos} search={this.performSearch} text="people" loading={this.state.loading} title={"People"}/>} ></Route>
+        <Route exact path='/sunset' render={ () => <Gallary data={this.state.photos} search={this.performSearch} text="sunset" loading={this.state.loading} title={"Sunset"}/>} ></Route>
+        <Route exact path="/search/:text" render={() => <Gallary data={this.state.photos}  search={this.performSearch} text={searchText} loading={this.state.loading} title={this.state.title}/>} />
         <Route component = {NotFound}/>
         </Switch>
         </div>
@@ -113,3 +61,5 @@ export default class App extends Component {
     );
     }
 }
+
+export default App;
