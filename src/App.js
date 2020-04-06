@@ -49,7 +49,7 @@ class App extends Component {
         <div className="container">
             <Nav/>
         <Switch>
-        <Route exact path='/' render={ () => <Gallary data={this.state.photos} search={this.performSearch} text="vacation" loading={this.state.loading} title={"Friends"} />} ></Route>
+        <Route exact path='/' render={ () => <Gallary data={this.state.photos} search={this.performSearch} text="vacation" loading={this.state.loading} title={"Vacation"} />} ></Route>
         <Route exact path='/friends' render={ () => <Gallary data={this.state.photos} search={this.performSearch} text="friends" loading={this.state.loading} title={"Friends"} />} ></Route>
         <Route exact path='/people' render={ () => <Gallary data={this.state.photos} search={this.performSearch} text="people" loading={this.state.loading} title={"People"}/>} ></Route>
         <Route exact path='/sunset' render={ () => <Gallary data={this.state.photos} search={this.performSearch} text="sunset" loading={this.state.loading} title={"Sunset"}/>} ></Route>

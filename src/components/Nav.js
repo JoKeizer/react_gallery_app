@@ -13,7 +13,6 @@ class Nav extends Component {
           <div>          <SearchForm onSubmit={this.handleRoute}/>
                       <nav className="main-nav">
             <ul>
-              <li><NavLink to='/'>Home</NavLink></li>
               <li><NavLink to='/friends'>Friends</NavLink></li>
               <li><NavLink to='/people'>People</NavLink></li>
               <li><NavLink to='/sunset'>Sunset</NavLink></li>
